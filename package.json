@@ -6,7 +6,8 @@
   },
   "bin": "bin/koko",
   "dependencies": {
-    "express": "3.0.0rc3"
+    "express": "3.0.0rc3",
+    "empty-port": "0.0.1"
   },
   "description": "ERROR: No README.md file found!",
   "main": "app.js",

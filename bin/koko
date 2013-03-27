@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require(__dirname + '/../app');
+var Koko = require(__dirname + '/../app');
+
+new Koko();

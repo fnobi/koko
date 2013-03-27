@@ -4,28 +4,32 @@ var express   = require('express')
   , path      = require('path')
   , emptyPort = require('empty-port');
 
-var dirname = process.argv[2] || '';
-var dirpath = path.resolve(dirname);
+var Koko = function () {
+    var dirname = process.argv[2] || '';
+    var dirpath = path.resolve(dirname);
 
-if (!fs.existsSync(dirpath)) {
-    console.error('"%s" does\'nt exist.', dirpath);
-    process.exit();
-}
-
-console.log('[DocumentRoot: %s]', dirpath);
-
-var app = express();
-app.configure(function(){
-    app.use(express.static(dirpath));
-});
-
-emptyPort( { }, function (err, port) {
-    if (err) {
-        console.error('error on picking port.');
+    if (!fs.existsSync(dirpath)) {
+        console.error('"%s" does\'nt exist.', dirpath);
         process.exit();
     }
 
-    http.createServer(app).listen(port, function(){
-        console.log("Express server listening on port " + port);
+    console.log('[DocumentRoot: %s]', dirpath);
+
+    var app = express();
+    app.configure(function(){
+        app.use(express.static(dirpath));
     });
-} );
+
+    emptyPort( { }, function (err, port) {
+        if (err) {
+            console.error('error on picking port.');
+            process.exit();
+        }
+
+        http.createServer(app).listen(port, function(){
+            console.log("Express server listening on port " + port);
+        });
+    } );
+};
+
+module.exports = Koko;

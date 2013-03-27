@@ -1,29 +1,36 @@
-var express   = require('express')
-  , http      = require('http')
-  , fs        = require('fs')
-  , emptyPort = require('empty-port');
+var fs        = require('fs'),
+    http      = require('http'),
+    express   = require('express'),
+    emptyPort = require('empty-port'),
+    colors    = require('colors');
 
 var Koko = function (root) {
+    colors.setTheme({
+        info: 'green',
+        warn: 'yellow',
+        error: 'red'
+    });
+
     if (!fs.existsSync(root)) {
-        console.error('"%s" does\'nt exist.', root);
+        console.error('%s does\'nt exist.'.error, root);
         process.exit();
     }
 
-    console.log('[DocumentRoot: %s]', root);
+    console.log('document root\t: %s'.info, root);
 
     var app = express();
     app.configure(function(){
         app.use(express.static(root));
     });
 
-    emptyPort( { }, function (err, port) {
+    emptyPort({}, function (err, port) {
         if (err) {
-            console.error('error on picking port.');
+            console.error('Error on picking port. Retry.'.error);
             process.exit();
         }
 
         http.createServer(app).listen(port, function(){
-            console.log("Express server listening on port " + port);
+            console.log('listen port\t: %d'.info, port);
         });
     } );
 };

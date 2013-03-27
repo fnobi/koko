@@ -8,7 +8,8 @@
   "dependencies": {
     "express": "3.0.0rc3",
     "empty-port": "0.0.1",
-    "optimist": "~0.3.5"
+    "optimist": "~0.3.5",
+    "colors": "~0.6.0-1"
   },
   "description": "instant file server (proxy server).",
   "main": "index.js",

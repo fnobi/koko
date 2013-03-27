@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 var path = require('path'),
+    argv = require('optimist').argv,
     Koko = require(__dirname + '/../');
 
-var dirname = process.argv[2] || '';
+var dirname = argv._.shift() || '.';
 var dirpath = path.resolve(dirname);
 
 new Koko(dirpath);

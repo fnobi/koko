@@ -1,23 +1,19 @@
 var express   = require('express')
   , http      = require('http')
   , fs        = require('fs')
-  , path      = require('path')
   , emptyPort = require('empty-port');
 
-var Koko = function () {
-    var dirname = process.argv[2] || '';
-    var dirpath = path.resolve(dirname);
-
-    if (!fs.existsSync(dirpath)) {
-        console.error('"%s" does\'nt exist.', dirpath);
+var Koko = function (root) {
+    if (!fs.existsSync(root)) {
+        console.error('"%s" does\'nt exist.', root);
         process.exit();
     }
 
-    console.log('[DocumentRoot: %s]', dirpath);
+    console.log('[DocumentRoot: %s]', root);
 
     var app = express();
     app.configure(function(){
-        app.use(express.static(dirpath));
+        app.use(express.static(root));
     });
 
     emptyPort( { }, function (err, port) {

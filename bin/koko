@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
-var Koko = require(__dirname + '/../');
+var path = require('path'),
+    Koko = require(__dirname + '/../');
 
-new Koko();
+var dirname = process.argv[2] || '';
+var dirpath = path.resolve(dirname);
+
+new Koko(dirpath);

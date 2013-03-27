@@ -16,7 +16,7 @@ and current directory is set as document root.
 % cd your/document/root
 % koko
 document root : your/document/root
-listen port   : 59733
+[listen 59733]
 ```
 
 or, with path
@@ -24,5 +24,17 @@ or, with path
 ```bash
 % koko your/document/root
 document root : your/document/root
-listen port   : 1835
+[listen 1835]
 ```
+
+### option
+
+with -o, Koko auto open url on browser.
+
+```bash
+% koko -o your/document/root
+document root : your/document/root
+[listen 4797]
+[open http://localhost:4797]
+```
+

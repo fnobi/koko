@@ -48,8 +48,8 @@ var Koko = function (root, opt) {
             autoOpen.replace ? autoOpen.replace(/^\//, '') : ''
         ].join('/');
 
-        console.log('[open %s]'.info, url);
-        child_process.exec('open ' + url, next);
+        console.log('[open %s]'.info, openURL);
+        child_process.exec('open ' + openURL, next);
     }], function (err) {
             if (err) {
                 console.error((err + '').error);

@@ -11,7 +11,7 @@ and current directory is set as document root.
 % npm install -g koko
 ```
 
-### usage
+### start server
 ```bash
 % cd your/document/root
 % koko
@@ -47,3 +47,13 @@ document root : your/document/root
 [open http://localhost:4797/default.html]
 ```
 
+### proxy
+
+with -u (--url), Koko work as proxy server for url.
+
+```bash
+% koko -u http://fnobi.com/
+document root : your/document/root
+proxy : fnobi.com:80
+[listen 6022]
+```

@@ -8,6 +8,7 @@ var argv = require('optimist')
     .alias('o', 'open')
     .alias('p', 'path')
     .alias('h', 'help')
+    .alias('u', 'url')
     .describe('o', 'open server\'s url on browser')
     .describe('p', 'document root for server')
     .argv;
@@ -21,5 +22,6 @@ var dirname = argv.p || '.';
 var dirpath = path.resolve(dirname);
 
 new Koko(dirpath, {
-    autoOpen: argv.o
+    autoOpen: argv.o,
+    proxyURL: argv.u
 });

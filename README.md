@@ -19,22 +19,31 @@ document root : your/document/root
 [listen 59733]
 ```
 
-or, with path
+or, with path. use option -p (--path).
 
 ```bash
-% koko your/document/root
+% koko -p your/document/root
 document root : your/document/root
 [listen 1835]
 ```
 
-### option
+### auto open
 
-with -o, Koko auto open url on browser.
+with -o (--open), Koko auto open url on browser.
 
 ```bash
-% koko -o your/document/root
+% koko -o -p your/document/root
 document root : your/document/root
 [listen 4797]
 [open http://localhost:4797]
+```
+
+use -o with argument, Koko open url with path on browser.
+
+```bash
+% koko -o default.html -p your/document/root
+document root : your/document/root
+[listen 4797]
+[open http://localhost:4797/default.html]
 ```
 

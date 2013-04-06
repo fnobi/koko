@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
 var path = require('path'),
-    argv = require('optimist').boolean('o').argv,
     Koko = require(__dirname + '/../');
 
-var dirname = argv._.shift() || '.';
+var argv = require('optimist')
+    .alias('o', 'open')
+    .alias('p', 'path')
+    .argv;
+
+
+var dirname = argv.p || '.';
 var dirpath = path.resolve(dirname);
 
 new Koko(dirpath, {

@@ -9,14 +9,6 @@ var fs            = require('fs'),
     child_process = require('child_process');
 
 var Koko = function (root, opt) {
-    var self = this;
-    var app  = express();
-
-    var proxyURL = opt.proxyURL;
-    var autoOpen = opt.autoOpen;
-
-    var port, proxy;
-
     colors.setTheme({
         info  : 'green',
         warn  : 'yellow',
@@ -25,10 +17,43 @@ var Koko = function (root, opt) {
 
     if (!fs.existsSync(root)) {
         console.error('%s does\'nt exist.'.error, root);
-        process.exit();
+        return;
     }
-
     console.log('document root\t: %s'.info, root);
+
+    this.root     = root;
+    this.proxyURL = opt.proxyURL;
+    this.autoOpen = opt.autoOpen;
+
+    this.start();
+};
+
+Koko.prototype.start = function () {
+    var self     = this;
+    var autoOpen = this.autoOpen;
+
+    this.startServer(function (err) {
+        if (err) {
+            console.error((err + '').error);
+            process.exit();
+        }
+
+        if (!autoOpen) {
+            return;
+        }
+
+        self.open(autoOpen);
+    });
+};
+
+Koko.prototype.startServer = function (callback) {
+    var self     = this;
+    var root     = this.root;
+    var proxyURL = this.proxyURL;
+
+    var port, proxy;
+
+    var app  = express();
 
     if (proxyURL) {
         proxy = new Koko.Proxy(proxyURL);
@@ -49,28 +74,21 @@ var Koko = function (root, opt) {
         emptyPort({}, next);
     }, function (p, next) {
         port = p;
-        self.port = port;
 
         http.createServer(app).listen(port, next);
 
     }, function (next) {
         console.log('[listen %d]'.info, port);
 
-        if (!autoOpen) {
-            return next();
-        }
+        self.port = port;
 
-        self.open(autoOpen, next);
-
-    }], function (err) {
-            if (err) {
-                console.error((err + '').error);
-                process.exit();
-            }
-    });
+        next();
+    }], callback);
 };
 
 Koko.prototype.open = function (openPath, callback) {
+    callback = callback || function () {};
+
     var port = this.port;
 
     var openURL = [
@@ -104,7 +122,9 @@ Koko.Proxy.prototype.proxyRequest = function (req, res) {
     var host  = this.host;
     var proxy = this.proxy;
 
+    // そのままだと、Host headerがKokoのurlになってしまうので、上書きする
     req.headers.host = host;
+
     proxy.proxyRequest(req, res);
 };
 

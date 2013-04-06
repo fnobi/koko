@@ -1,10 +1,23 @@
 #!/usr/bin/env node
 
 var path = require('path'),
-    argv = require('optimist').boolean('o').argv,
     Koko = require(__dirname + '/../');
 
-var dirname = argv._.shift() || '.';
+var argv = require('optimist')
+    .boolean('h')
+    .alias('o', 'open')
+    .alias('p', 'path')
+    .alias('h', 'help')
+    .describe('o', 'open server\'s url on browser')
+    .describe('p', 'document root for server')
+    .argv;
+
+if (argv.h) {
+    console.log(require('optimist').help());
+    process.exit();
+}
+
+var dirname = argv.p || '.';
 var dirpath = path.resolve(dirname);
 
 new Koko(dirpath, {

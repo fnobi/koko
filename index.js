@@ -37,9 +37,16 @@ var Koko = function (root, opt) {
     }, function (next) {
         console.log('[listen %d]'.info, port);
 
-        if (!opt.autoOpen) {
+        var autoOpen = opt.autoOpen;
+
+        if (!autoOpen) {
             return next();
         }
+
+        var openURL = [
+            url,
+            autoOpen.replace ? autoOpen.replace(/^\//, '') : ''
+        ].join('/');
 
         console.log('[open %s]'.info, url);
         child_process.exec('open ' + url, next);

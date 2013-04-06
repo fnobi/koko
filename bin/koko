@@ -4,10 +4,18 @@ var path = require('path'),
     Koko = require(__dirname + '/../');
 
 var argv = require('optimist')
+    .boolean('h')
     .alias('o', 'open')
     .alias('p', 'path')
+    .alias('h', 'help')
+    .describe('o', 'open server\'s url on browser')
+    .describe('p', 'document root for server')
     .argv;
 
+if (argv.h) {
+    console.log(require('optimist').help());
+    process.exit();
+}
 
 var dirname = argv.p || '.';
 var dirpath = path.resolve(dirname);

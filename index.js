@@ -23,14 +23,12 @@ var Koko = function (root, opt) {
 
     this.root     = root;
     this.proxyURL = opt.proxyURL;
-    this.autoOpen = opt.autoOpen;
-
-    this.start();
+    this.openPath = opt.openPath;
 };
 
 Koko.prototype.start = function () {
     var self     = this;
-    var autoOpen = this.autoOpen;
+    var openPath = this.openPath;
 
     this.startServer(function (err) {
         if (err) {
@@ -38,11 +36,11 @@ Koko.prototype.start = function () {
             process.exit();
         }
 
-        if (!autoOpen) {
+        if (!openPath) {
             return;
         }
 
-        self.open(autoOpen);
+        self.open(openPath);
     });
 };
 

@@ -21,7 +21,9 @@ if (argv.h) {
 var dirname = argv.p || '.';
 var dirpath = path.resolve(dirname);
 
-new Koko(dirpath, {
-    autoOpen: argv.o,
+var koko = new Koko(dirpath, {
+    openPath: argv.o,
     proxyURL: argv.u
 });
+
+koko.start();

@@ -10,6 +10,11 @@ and current directory is set as document root.
 ```bash
 % npm install -g koko
 ```
+or, install dev-version.
+
+```bash
+% npm -g install git://github.com/fnobi/koko.git
+```
 
 ### start server
 ```bash

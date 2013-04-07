@@ -29,29 +29,23 @@ var Koko = function (root, opt) {
 };
 
 Koko.prototype.start = function () {
-    var self     = this;
-    var openPath = this.openPath;
-
     this.startServer(function (err) {
         if (err) {
             console.error((err + '').error);
             process.exit();
         }
 
-        if (!openPath) {
+        if (!this.openPath) {
             return;
         }
 
-        self.open(openPath);
-    });
+        this.open();
+    }.bind(this));
 };
 
 Koko.prototype.startServer = function (callback) {
-    var self     = this;
-    var root     = this.root;
     var proxyURL = this.proxyURL;
-
-    var port, proxy;
+    var proxy;
 
     var app  = express();
 
@@ -61,33 +55,35 @@ Koko.prototype.startServer = function (callback) {
     }
 
     app.configure(function(){
-        app.use(express.static(root));
+        app.use(express.static(this.root));
         app.use(function (req, res, next) {
             if (!proxy) {
                 return next();
             }
             proxy.proxyRequest(req, res);
         });
-    });
+    }.bind(this));
 
-    async.waterfall([function (next) {
-        emptyPort({}, next);
-    }, function (p, next) {
-        port = p;
+    async.waterfall([
+        emptyPort.bind(this, {}),
+        function (p, next) {
+            this.port = p;
 
-        http.createServer(app).listen(port, next);
+            http.createServer(app).listen(this.port, next);
 
-    }, function (next) {
-        console.log('[listen %d]'.info, port);
+        }.bind(this),
+        function (next) {
+            console.log('[listen %d]'.info, this.port);
 
-        self.port = port;
-
-        next();
-    }], callback);
+            next();
+        }.bind(this)
+    ], callback);
 };
 
-Koko.prototype.open = function (openPath, callback) {
+Koko.prototype.open = function (callback) {
     callback = callback || function () {};
+
+    var openPath = this.openPath;
 
     var host = localIP()[0] || '127.0.0.1';
     var port = this.port;
@@ -102,6 +98,10 @@ Koko.prototype.open = function (openPath, callback) {
 };
 
 Koko.Proxy = function (proxyURL) {
+    if (!proxyURL.match(/^https?:\/\//)) {
+        proxyURL = 'http://' + proxyURL;
+    }
+
     var host = url.parse(proxyURL).hostname || 'localhost';
     var port = url.parse(proxyURL).port     || 80;
 

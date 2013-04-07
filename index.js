@@ -6,7 +6,9 @@ var fs            = require('fs'),
     emptyPort     = require('empty-port'),
     httpProxy     = require('http-proxy'),
     colors        = require('colors'),
-    child_process = require('child_process');
+    child_process = require('child_process'),
+
+    localIP       = require('lib/localIP');
 
 var Koko = function (root, opt) {
     colors.setTheme({

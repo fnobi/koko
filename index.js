@@ -1,13 +1,12 @@
 var fs            = require('fs'),
     async         = require('async'),
-    url           = require('url'),
     http          = require('http'),
     express       = require('express'),
     emptyPort     = require('empty-port'),
-    httpProxy     = require('http-proxy'),
     colors        = require('colors'),
     child_process = require('child_process'),
 
+    Proxy         = require('./lib/Proxy'),
     localIP       = require('./lib/localIP');
 
 var Koko = function (root, opt) {
@@ -50,7 +49,7 @@ Koko.prototype.startServer = function (callback) {
     var app  = express();
 
     if (proxyURL) {
-        proxy = new Koko.Proxy(proxyURL);
+        proxy = new Proxy(proxyURL);
         console.log('proxy\t: %s:%d'.info, proxy.host, proxy.port);
     }
 
@@ -95,38 +94,6 @@ Koko.prototype.open = function (callback) {
 
     console.log('[open %s]'.info, openURL);
     child_process.exec('open ' + openURL, callback);
-};
-
-Koko.Proxy = function (proxyURL) {
-    if (!proxyURL.match(/^https?:\/\//)) {
-        proxyURL = 'http://' + proxyURL;
-    }
-
-    var host = url.parse(proxyURL).hostname || 'localhost';
-    var port = url.parse(proxyURL).port     || 80;
-
-    var proxy = new httpProxy.HttpProxy({
-        target: {
-            host: host,
-            port: port
-        }
-    });
-
-    this.url = proxyURL;
-
-    this.host = host;
-    this.port = port;
-    this.proxy = proxy;
-};
-
-Koko.Proxy.prototype.proxyRequest = function (req, res) {
-    var host  = this.host;
-    var proxy = this.proxy;
-
-    // そのままだと、Host headerがKokoのurlになってしまうので、上書きする
-    req.headers.host = host;
-
-    proxy.proxyRequest(req, res);
 };
 
 module.exports = Koko;

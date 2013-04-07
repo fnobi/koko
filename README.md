@@ -35,7 +35,7 @@ with -o (--open), Koko auto open url on browser.
 % koko -o -p your/document/root
 document root : your/document/root
 [listen 4797]
-[open http://localhost:4797]
+[open http://172.0.0.1:4797]
 ```
 
 use -o with argument, Koko open url with path on browser.
@@ -44,7 +44,7 @@ use -o with argument, Koko open url with path on browser.
 % koko -o default.html -p your/document/root
 document root : your/document/root
 [listen 4797]
-[open http://localhost:4797/default.html]
+[open http://172.0.0.1:4797/default.html]
 ```
 
 ### proxy

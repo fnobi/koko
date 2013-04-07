@@ -1,13 +1,12 @@
 var fs            = require('fs'),
     async         = require('async'),
-    url           = require('url'),
     http          = require('http'),
     express       = require('express'),
     emptyPort     = require('empty-port'),
-    httpProxy     = require('http-proxy'),
     colors        = require('colors'),
     child_process = require('child_process'),
 
+    Proxy         = require('./lib/Proxy'),
     localIP       = require('./lib/localIP');
 
 var Koko = function (root, opt) {
@@ -29,65 +28,61 @@ var Koko = function (root, opt) {
 };
 
 Koko.prototype.start = function () {
-    var self     = this;
-    var openPath = this.openPath;
-
     this.startServer(function (err) {
         if (err) {
             console.error((err + '').error);
             process.exit();
         }
 
-        if (!openPath) {
+        if (!this.openPath) {
             return;
         }
 
-        self.open(openPath);
-    });
+        this.open();
+    }.bind(this));
 };
 
 Koko.prototype.startServer = function (callback) {
-    var self     = this;
-    var root     = this.root;
     var proxyURL = this.proxyURL;
-
-    var port, proxy;
+    var proxy;
 
     var app  = express();
 
     if (proxyURL) {
-        proxy = new Koko.Proxy(proxyURL);
+        proxy = new Proxy(proxyURL);
         console.log('proxy\t: %s:%d'.info, proxy.host, proxy.port);
     }
 
     app.configure(function(){
-        app.use(express.static(root));
+        app.use(express.static(this.root));
         app.use(function (req, res, next) {
             if (!proxy) {
                 return next();
             }
             proxy.proxyRequest(req, res);
         });
-    });
+    }.bind(this));
 
-    async.waterfall([function (next) {
-        emptyPort({}, next);
-    }, function (p, next) {
-        port = p;
+    async.waterfall([
+        emptyPort.bind(this, {}),
+        function (p, next) {
+            this.port = p;
 
-        http.createServer(app).listen(port, next);
+            http.createServer(app).listen(this.port, next);
 
-    }, function (next) {
-        console.log('[listen %d]'.info, port);
+        }.bind(this),
+        function (next) {
+            console.log('[listen %d]'.info, this.port);
 
-        self.port = port;
-
-        next();
-    }], callback);
+            next();
+        }.bind(this)
+    ], callback);
 };
 
-Koko.prototype.open = function (openPath, callback) {
+Koko.prototype.open = function (callback) {
     callback = callback || function () {};
+
+    var openPath = this.openPath;
 
     var host = localIP()[0] || '127.0.0.1';
     var port = this.port;
@@ -99,34 +94,6 @@ Koko.prototype.open = function (openPath, callback) {
 
     console.log('[open %s]'.info, openURL);
     child_process.exec('open ' + openURL, callback);
-};
-
-Koko.Proxy = function (proxyURL) {
-    var host = url.parse(proxyURL).hostname || 'localhost';
-    var port = url.parse(proxyURL).port     || 80;
-
-    var proxy = new httpProxy.HttpProxy({
-        target: {
-            host: host,
-            port: port
-        }
-    });
-
-    this.url = proxyURL;
-
-    this.host = host;
-    this.port = port;
-    this.proxy = proxy;
-};
-
-Koko.Proxy.prototype.proxyRequest = function (req, res) {
-    var host  = this.host;
-    var proxy = this.proxy;
-
-    // そのままだと、Host headerがKokoのurlになってしまうので、上書きする
-    req.headers.host = host;
-
-    proxy.proxyRequest(req, res);
 };
 
 module.exports = Koko;

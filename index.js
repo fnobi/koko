@@ -8,7 +8,7 @@ var fs            = require('fs'),
     colors        = require('colors'),
     child_process = require('child_process'),
 
-    localIP       = require('lib/localIP');
+    localIP       = require('./lib/localIP');
 
 var Koko = function (root, opt) {
     colors.setTheme({
@@ -89,10 +89,11 @@ Koko.prototype.startServer = function (callback) {
 Koko.prototype.open = function (openPath, callback) {
     callback = callback || function () {};
 
+    var host = localIP()[0] || '127.0.0.1';
     var port = this.port;
 
     var openURL = [
-        'http://localhost:' + port,
+        'http://' + host + ':' + port,
         openPath.replace ? openPath.replace(/^\//, '') : ''
     ].join('/');
 

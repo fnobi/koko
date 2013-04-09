@@ -1,7 +1,7 @@
 koko
 ====
 
-instant file server (proxy server).
+instant web server (proxy server).
 
 Koko start server on port picked randomly,
 and current directory is set as document root.

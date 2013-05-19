@@ -6,7 +6,13 @@ instant web server (proxy server).
 Koko start server on port picked randomly,
 and current directory is set as document root.
 
-### Install
+### features
+
+- auto open path on browser
+- proxy server
+- php module
+
+### install
 ```bash
 % npm install -g koko
 ```

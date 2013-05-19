@@ -1,6 +1,6 @@
 {
   "name": "koko",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "scripts": {
     "start": "./bin/koko"
   },
@@ -15,7 +15,7 @@
     "php-node": "0.0.2",
     "php-express": "0.0.0"
   },
-  "description": "instant file server (proxy server).",
+  "description": "instant web server (proxy server).",
   "main": "index.js",
   "devDependencies": {},
   "repository": "",

@@ -1,4 +1,6 @@
 var fs            = require('fs'),
+    path          = require('path'),
+    util          = require('util'),
     async         = require('async'),
     http          = require('http'),
     express       = require('express'),
@@ -54,6 +56,7 @@ Koko.prototype.startServer = function (callback) {
     }
 
     app.configure(function(){
+        app.use(app.router);
         app.use(express.static(this.root));
         app.use(function (req, res, next) {
             if (!proxy) {
@@ -62,6 +65,28 @@ Koko.prototype.startServer = function (callback) {
             proxy.proxyRequest(req, res);
         });
     }.bind(this));
+
+    app.all(/.+\.php$/, function(req, res) {
+        var filePath = req.path.slice(1);
+        var command = util.format(
+            'cd %s; php %s',
+            path.dirname(filePath),
+            path.basename(filePath)
+        );
+
+        child_process.exec(command, function (error, stdout, stderr) {
+            if (error) {
+                res.writeHead(500, {'Content-Type' : 'text/plain'});
+                res.end(error);
+            } else if (stdout) {
+                res.writeHead(200, {'Content-Type' : 'text/html'});
+                res.end(stdout);
+            } else if (stderr) {
+                res.writeHead(500, {'Content-Type' : 'text/plain'});
+                res.end(stderr);
+            }
+        });
+    });
 
     async.waterfall([
         emptyPort.bind(this, {}),

@@ -11,7 +11,8 @@
     "optimist": "~0.3.5",
     "colors": "~0.6.0-1",
     "async": "~0.2.6",
-    "http-proxy": "~0.10.0"
+    "http-proxy": "~0.10.0",
+    "php-node": "0.0.2"
   },
   "description": "instant file server (proxy server).",
   "main": "index.js",

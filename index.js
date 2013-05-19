@@ -9,7 +9,9 @@ var fs            = require('fs'),
     child_process = require('child_process'),
 
     Proxy         = require('./lib/Proxy'),
-    localIP       = require('./lib/localIP');
+    localIP       = require('./lib/localIP'),
+
+    phpExpress = require('php-express')();
 
 var Koko = function (root, opt) {
     colors.setTheme({
@@ -27,6 +29,7 @@ var Koko = function (root, opt) {
     this.root     = root;
     this.proxyURL = opt.proxyURL;
     this.openPath = opt.openPath;
+    this.usePHP = opt.usePHP;
 };
 
 Koko.prototype.start = function () {
@@ -55,22 +58,21 @@ Koko.prototype.startServer = function (callback) {
         console.log('proxy\t: %s:%d'.info, proxy.host, proxy.port);
     }
 
+    console.log('php\t: %s'.info, this.usePHP ? 'on' : 'off');
+
     app.configure(function(){
-        app.use(function(req, res, next) {
-            var data = '';
-            req.setEncoding('utf8');
-            req.on('data', function(chunk) {
-                data += chunk;
-            });
+        app.use(express.bodyParser());
 
-            req.on('end', function() {
-                req.body = data;
-                next();
-            });
-        });
+        if (this.usePHP) {
+            app.set('views', this.root);
+            app.engine('php', phpExpress.engine);
+            app.set('view engine', 'php');
 
-        app.use(app.router);
+            app.use(app.router);
+        }
+
         app.use(express.static(this.root));
+
         app.use(function (req, res, next) {
             if (!proxy) {
                 return next();
@@ -79,46 +81,9 @@ Koko.prototype.startServer = function (callback) {
         });
     }.bind(this));
 
-    app.all(/.+\.php$/, function(req, res) {
-        var filePath = path.resolve(this.root, req.path.slice(1)),
-            binPath = '/usr/bin/php',
-            runnerPath = __dirname + '/lib/php/page_runner.php',
-            query = req._parsedUrl.query || '',
-            body = req.body || '',
-
-            env = {
-                REQUEST_METHOD: req.method,
-                CONTENT_LENGTH: body.length,
-                QUERY_STRING: query
-            };
-
-        var encodedEnv = [];
-        for (var key in env) {
-            if (env[key]) {
-                encodedEnv.push(util.format('%s="%s"', key, env[key]));
-            }
-        }
-
-        var command = util.format(
-                '%s %s %s %s',
-                encodedEnv.length ? 'export ' + encodedEnv.join(' ') + ';' : '',
-                (body ? util.format('echo "%s" | ', req.body) : '') + binPath,
-                runnerPath,
-                filePath
-            );
-
-        child_process.exec(command, function (error, stdout, stderr) {
-            if (error) {
-                res.writeHead(500, {'Content-Type' : 'text/plain'});
-                res.end(error);
-            } else if (stdout) {
-                res.end(stdout);
-            } else if (stderr) {
-                res.writeHead(500, {'Content-Type' : 'text/plain'});
-                res.end(stderr);
-            }
-        });
-    }.bind(this));
+    if (this.usePHP) {
+        app.all(/.+\.php$/, phpExpress.router);
+    }
 
     async.waterfall([
         emptyPort.bind(this, {}),

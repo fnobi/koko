@@ -4,13 +4,24 @@ var path = require('path'),
     Koko = require(__dirname + '/../');
 
 var argv = require('optimist')
-    .boolean('h')
-    .alias('o', 'open')
-    .alias('p', 'path')
-    .alias('h', 'help')
-    .alias('u', 'url')
-    .describe('o', 'open server\'s url on browser')
     .describe('p', 'document root for server')
+    .alias('p', 'path')
+    .default('p', '.')
+
+    .describe('o', 'open server\'s url on browser')
+    .alias('o', 'open')
+
+    .describe('u', 'proxy url')
+    .alias('u', 'url')
+
+    .describe('no-php', 'stop using express-php')
+    .boolean('no-php')
+    .default('no-php', false)
+
+    .describe('h', 'show this help menu')
+    .boolean('h')
+    .alias('h', 'help')
+
     .argv;
 
 if (argv.h) {
@@ -23,7 +34,8 @@ var dirpath = path.resolve(dirname);
 
 var koko = new Koko(dirpath, {
     openPath: argv.o,
-    proxyURL: argv.u
+    proxyURL: argv.u,
+    usePHP: argv.php
 });
 
 koko.start();

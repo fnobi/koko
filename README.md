@@ -68,3 +68,14 @@ document root : your/document/root
 proxy : fnobi.com:80
 [listen 6022]
 ```
+
+### proxy
+
+with --php, Koko exec .php file by /usr/bin/php.
+
+```bash
+% koko --php
+document root : your/document/root
+php: on
+[listen 10791]
+```

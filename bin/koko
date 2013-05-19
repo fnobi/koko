@@ -14,9 +14,8 @@ var argv = require('optimist')
     .describe('u', 'proxy url')
     .alias('u', 'url')
 
-    .describe('no-php', 'stop using express-php')
-    .boolean('no-php')
-    .default('no-php', false)
+    .describe('php', 'using express-php')
+    .boolean('php')
 
     .describe('h', 'show this help menu')
     .boolean('h')

@@ -1,4 +1,6 @@
 var fs            = require('fs'),
+    path          = require('path'),
+    util          = require('util'),
     async         = require('async'),
     http          = require('http'),
     express       = require('express'),
@@ -7,7 +9,9 @@ var fs            = require('fs'),
     child_process = require('child_process'),
 
     Proxy         = require('./lib/Proxy'),
-    localIP       = require('./lib/localIP');
+    localIP       = require('./lib/localIP'),
+
+    phpExpress = require('php-express')();
 
 var Koko = function (root, opt) {
     colors.setTheme({
@@ -25,6 +29,7 @@ var Koko = function (root, opt) {
     this.root     = root;
     this.proxyURL = opt.proxyURL;
     this.openPath = opt.openPath;
+    this.usePHP = opt.usePHP;
 };
 
 Koko.prototype.start = function () {
@@ -53,8 +58,21 @@ Koko.prototype.startServer = function (callback) {
         console.log('proxy\t: %s:%d'.info, proxy.host, proxy.port);
     }
 
+    console.log('php\t: %s'.info, this.usePHP ? 'on' : 'off');
+
     app.configure(function(){
+        app.use(express.bodyParser());
+
+        if (this.usePHP) {
+            app.set('views', this.root);
+            app.engine('php', phpExpress.engine);
+            app.set('view engine', 'php');
+
+            app.use(app.router);
+        }
+
         app.use(express.static(this.root));
+
         app.use(function (req, res, next) {
             if (!proxy) {
                 return next();
@@ -62,6 +80,10 @@ Koko.prototype.startServer = function (callback) {
             proxy.proxyRequest(req, res);
         });
     }.bind(this));
+
+    if (this.usePHP) {
+        app.all(/.+\.php$/, phpExpress.router);
+    }
 
     async.waterfall([
         emptyPort.bind(this, {}),

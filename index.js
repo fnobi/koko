@@ -56,6 +56,19 @@ Koko.prototype.startServer = function (callback) {
     }
 
     app.configure(function(){
+        app.use(function(req, res, next) {
+            var data = '';
+            req.setEncoding('utf8');
+            req.on('data', function(chunk) {
+                data += chunk;
+            });
+
+            req.on('end', function() {
+                req.body = data;
+                next();
+            });
+        });
+
         app.use(app.router);
         app.use(express.static(this.root));
         app.use(function (req, res, next) {
@@ -67,26 +80,45 @@ Koko.prototype.startServer = function (callback) {
     }.bind(this));
 
     app.all(/.+\.php$/, function(req, res) {
-        var filePath = req.path.slice(1);
+        var filePath = path.resolve(this.root, req.path.slice(1)),
+            binPath = '/usr/bin/php',
+            runnerPath = __dirname + '/lib/php/page_runner.php',
+            query = req._parsedUrl.query || '',
+            body = req.body || '',
+
+            env = {
+                REQUEST_METHOD: req.method,
+                CONTENT_LENGTH: body.length,
+                QUERY_STRING: query
+            };
+
+        var encodedEnv = [];
+        for (var key in env) {
+            if (env[key]) {
+                encodedEnv.push(util.format('%s="%s"', key, env[key]));
+            }
+        }
+
         var command = util.format(
-            'cd %s; php %s',
-            path.dirname(filePath),
-            path.basename(filePath)
-        );
+                '%s %s %s %s',
+                encodedEnv.length ? 'export ' + encodedEnv.join(' ') + ';' : '',
+                (body ? util.format('echo "%s" | ', req.body) : '') + binPath,
+                runnerPath,
+                filePath
+            );
 
         child_process.exec(command, function (error, stdout, stderr) {
             if (error) {
                 res.writeHead(500, {'Content-Type' : 'text/plain'});
                 res.end(error);
             } else if (stdout) {
-                res.writeHead(200, {'Content-Type' : 'text/html'});
                 res.end(stdout);
             } else if (stderr) {
                 res.writeHead(500, {'Content-Type' : 'text/plain'});
                 res.end(stderr);
             }
         });
-    });
+    }.bind(this));
 
     async.waterfall([
         emptyPort.bind(this, {}),

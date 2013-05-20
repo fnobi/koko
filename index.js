@@ -29,6 +29,7 @@ var Koko = function (root, opt) {
     this.root     = root;
     this.proxyURL = opt.proxyURL;
     this.openPath = opt.openPath;
+    this.staticPort = opt.staticPort;
     this.usePHP = opt.usePHP;
 };
 
@@ -88,7 +89,7 @@ Koko.prototype.startServer = function (callback) {
     async.waterfall([
         emptyPort.bind(this, {}),
         function (p, next) {
-            this.port = p;
+            this.port = this.staticPort || p;
 
             http.createServer(app).listen(this.port, next);
 

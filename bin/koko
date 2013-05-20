@@ -8,6 +8,9 @@ var argv = require('optimist')
     .alias('p', 'path')
     .default('p', '.')
 
+    .describe('P', 'set static port')
+    .alias('P', 'port')
+
     .describe('o', 'open server\'s url on browser')
     .alias('o', 'open')
 
@@ -33,6 +36,7 @@ var dirpath = path.resolve(dirname);
 
 var koko = new Koko(dirpath, {
     openPath: argv.o,
+    staticPort: argv.port,
     proxyURL: argv.u,
     usePHP: argv.php
 });

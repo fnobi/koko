@@ -58,6 +58,14 @@ document root : your/document/root
 [open http://172.0.0.1:4797/default.html]
 ```
 
+### static port
+
+```bash
+% koko -P 5555
+document root : your/document/root
+[listen 5555]
+```
+
 ### proxy
 
 with -u (--url), Koko work as proxy server for url.
@@ -69,7 +77,7 @@ proxy : fnobi.com:80
 [listen 6022]
 ```
 
-### proxy
+### php
 
 with --php, Koko exec .php file by /usr/bin/php.
 

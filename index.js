@@ -72,6 +72,7 @@ Koko.prototype.startServer = function (callback) {
             app.use(app.router);
         }
 
+        app.use(express.directory(this.root));
         app.use(express.static(this.root));
 
         app.use(function (req, res, next) {

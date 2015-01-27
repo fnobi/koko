@@ -20,6 +20,10 @@ var argv = require('optimist')
     .describe('php', 'using express-php')
     .boolean('php')
 
+    .describe('md', 'using markdown rendering')
+    .boolean('md')
+    .alias('m', 'md')
+
     .describe('h', 'show this help menu')
     .boolean('h')
     .alias('h', 'help')
@@ -38,7 +42,8 @@ var koko = new Koko(dirpath, {
     openPath: argv.o,
     staticPort: argv.port,
     proxyURL: argv.u,
-    usePHP: argv.php
+    usePHP: argv.php,
+    useMarkdown: argv.md
 });
 
 koko.start();

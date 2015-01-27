@@ -12,7 +12,8 @@
     "colors": "~0.6.0-1",
     "async": "~0.2.6",
     "http-proxy": "~0.10.0",
-    "php-express": "0.0.1"
+    "php-express": "0.0.1",
+    "markdown": "^0.5.0"
   },
   "description": "instant web server (proxy server).",
   "main": "index.js",

@@ -11,7 +11,8 @@ var fs            = require('fs'),
     Proxy         = require('./lib/Proxy'),
     localIP       = require('./lib/localIP'),
 
-    phpExpress = require('php-express')();
+    phpExpress = require('php-express')(),
+    markdown = require('markdown').markdown;
 
 var Koko = function (root, opt) {
     colors.setTheme({
@@ -31,6 +32,7 @@ var Koko = function (root, opt) {
     this.openPath = opt.openPath;
     this.staticPort = opt.staticPort;
     this.usePHP = opt.usePHP;
+    this.useMarkdown = opt.useMarkdown;
 };
 
 Koko.prototype.start = function () {
@@ -60,6 +62,7 @@ Koko.prototype.startServer = function (callback) {
     }
 
     console.log('php\t: %s'.info, this.usePHP ? 'on' : 'off');
+    console.log('md\t: %s'.info, this.useMarkdown ? 'on' : 'off');
 
     app.configure(function(){
         app.use(express.bodyParser());
@@ -70,6 +73,16 @@ Koko.prototype.startServer = function (callback) {
             app.set('view engine', 'php');
 
             app.use(app.router);
+        }
+
+        if (this.useMarkdown) {
+            app.use(function (req, res, next) {
+                if (! /\.md$/.test(req.url)) {
+                    next();
+                    return;
+                }
+                this.renderMarkdown(req, res);
+            }.bind(this));
         }
 
         app.use(express.static(this.root));
@@ -118,6 +131,14 @@ Koko.prototype.open = function (callback) {
 
     console.log('[open %s]'.info, openURL);
     child_process.exec('open ' + openURL, callback);
+};
+
+Koko.prototype.renderMarkdown = function (req, res) {
+    var rel = req.url.slice(1);
+    var filePath = path.join(this.root, rel);                
+    fs.readFile(filePath, 'utf8', function (err, body) {
+        res.end(markdown.toHTML(body));
+    });
 };
 
 module.exports = Koko;

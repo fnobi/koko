@@ -18,8 +18,8 @@
   "description": "instant web server (proxy server).",
   "main": "index.js",
   "devDependencies": {
-    "grunt-release": "~0.7.0",
-    "grunt": "~0.4.5"
+    "grunt": "^0.4.5",
+    "grunt-release": "^0.13.0"
   },
   "repository": {
     "type": "git",

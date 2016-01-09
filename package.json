@@ -6,14 +6,14 @@
   },
   "bin": "bin/koko",
   "dependencies": {
-    "express": "3.0.0rc3",
-    "empty-port": "0.0.1",
-    "optimist": "~0.3.5",
-    "colors": "~0.6.0-1",
     "async": "~0.2.6",
+    "colors": "~0.6.0-1",
+    "empty-port": "0.0.1",
+    "express": "3.0.0rc3",
     "http-proxy": "~0.10.0",
-    "php-express": "0.0.1",
-    "markdown": "^0.5.0"
+    "marked": "^0.3.5",
+    "optimist": "~0.3.5",
+    "php-express": "0.0.1"
   },
   "description": "instant web server (proxy server).",
   "main": "index.js",

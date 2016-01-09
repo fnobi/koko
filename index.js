@@ -12,7 +12,7 @@ var fs            = require('fs'),
     localIP       = require('./lib/localIP'),
 
     phpExpress = require('php-express')(),
-    markdown = require('markdown').markdown;
+    marked = require('marked');
 
 var Koko = function (root, opt) {
     colors.setTheme({
@@ -137,7 +137,7 @@ Koko.prototype.renderMarkdown = function (req, res) {
     var rel = req.url.slice(1);
     var filePath = path.join(this.root, rel);                
     fs.readFile(filePath, 'utf8', function (err, body) {
-        res.end(markdown.toHTML(body));
+        res.end(marked(body));
     });
 };
 

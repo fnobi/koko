@@ -33,6 +33,7 @@ var Koko = function (root, opt) {
     this.staticPort = opt.staticPort;
     this.usePHP = opt.usePHP;
     this.useMarkdown = opt.useMarkdown;
+    this.htmlHandler = opt.htmlHandler;
 };
 
 Koko.prototype.start = function () {
@@ -82,6 +83,16 @@ Koko.prototype.startServer = function (callback) {
                     return;
                 }
                 this.renderMarkdown(req, res);
+            }.bind(this));
+        }
+
+        if (this.htmlHandler) {
+            app.use(function (req, res, next) {
+                if (! /\.html$/.test(req.url)) {
+                    next();
+                    return;
+                }
+                this.handleHtmlWithCustomHandler(req, res);
             }.bind(this));
         }
 
@@ -138,6 +149,15 @@ Koko.prototype.renderMarkdown = function (req, res) {
     var filePath = path.join(this.root, rel);                
     fs.readFile(filePath, 'utf8', function (err, body) {
         res.end(marked(body));
+    });
+};
+
+Koko.prototype.handleHtmlWithCustomHandler = function (req, res) {
+    var rel = req.url.slice(1);
+    var filePath = path.join(this.root, rel);
+    var htmlHandler = this.htmlHandler;
+    fs.readFile(filePath, 'utf8', function (err, body) {
+        res.end(htmlHandler(body));
     });
 };
 

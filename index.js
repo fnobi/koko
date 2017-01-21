@@ -6,7 +6,7 @@ var fs            = require('fs'),
     express       = require('express'),
     emptyPort     = require('empty-port'),
     colors        = require('colors'),
-    child_process = require('child_process'),
+    opn           = require('opn'),
 
     Proxy         = require('./lib/Proxy'),
     localIP       = require('./lib/localIP'),
@@ -141,7 +141,8 @@ Koko.prototype.open = function (callback) {
     ].join('/');
 
     console.log('[open %s]'.info, openURL);
-    child_process.exec('open ' + openURL, callback);
+    opn(openURL).then(callback);
+
 };
 
 Koko.prototype.renderMarkdown = function (req, res) {

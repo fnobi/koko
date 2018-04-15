@@ -22,7 +22,7 @@ var Koko = function (root, opt) {
     });
 
     if (!fs.existsSync(root)) {
-        console.error('%s does\'nt exist.'.error, root);
+        console.error('%s doesn\'t exist.'.error, root);
         return;
     }
     console.log('document root\t: %s'.info, root);
